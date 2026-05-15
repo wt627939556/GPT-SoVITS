@@ -7,12 +7,12 @@
 
 ## 2. OpenAI TTS Proxy
 
-- [ ] 2.1 Add `openai_tts_proxy/app.py` with `/audio/speech` and `/v1/audio/speech`.
+- [x] 2.1 Add `openai_tts_proxy/app.py` with `/audio/speech` and `/v1/audio/speech`.
 - [x] 2.2 Add `openai_tts_proxy/voices.yaml.example` with an `elysia` preset.
-- [ ] 2.3 Add `openai_tts_proxy/requirements.txt` and `openai_tts_proxy/Dockerfile`.
+- [x] 2.3 Add `openai_tts_proxy/requirements.txt` and `openai_tts_proxy/Dockerfile`.
 - [x] 2.4 Map OpenAI fields `model`, `input`, `voice`, `response_format`, and `speed` to official `/tts`.
 - [x] 2.5 Sanitize OpenClaw-style TTS tags before forwarding text.
-- [ ] 2.6 Return OpenAI-shaped JSON errors for unsupported voice, model, input, or format.
+- [x] 2.6 Return OpenAI-shaped JSON errors for unsupported voice, model, input, or format.
 
 ## 3. Local Runtime Setup
 
