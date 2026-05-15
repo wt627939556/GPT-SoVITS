@@ -62,14 +62,20 @@ def main():
     def _path(relative):
         return os.path.join(data_root, relative)
 
+    custom_t2s = os.environ.get("GPT_SOVITS_CUSTOM_T2S_PATH")
+    custom_vits = os.environ.get("GPT_SOVITS_CUSTOM_VITS_PATH")
+
+    t2s_path = custom_t2s or _path(vc["t2s_weights_path"])
+    vits_path = custom_vits or _path(vc["vits_weights_path"])
+
     config = {"custom": {
         "bert_base_path": _path(BERT_BASE),
         "cnhuhbert_base_path": _path(CNHUBERT_BASE),
         "device": device,
         "is_half": is_half,
-        "t2s_weights_path": _path(vc["t2s_weights_path"]),
+        "t2s_weights_path": t2s_path,
         "version": version,
-        "vits_weights_path": _path(vc["vits_weights_path"]),
+        "vits_weights_path": vits_path,
     }}
 
     for ver, vc_entry in VERSION_CONFIG.items():

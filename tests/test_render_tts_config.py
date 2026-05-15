@@ -83,6 +83,22 @@ def test_data_root_prefixes_model_paths():
                 f"{key} should be prefixed with data root"
 
 
+def test_custom_weight_paths_override_defaults():
+    """GPT_SOVITS_CUSTOM_T2S_PATH and GPT_SOVITS_CUSTOM_VITS_PATH override defaults."""
+    with tempfile.TemporaryDirectory() as tmp:
+        output = os.path.join(tmp, "tts_infer.yaml")
+        env = {
+            "GPT_SOVITS_CONFIG_OUTPUT": output,
+            "GPT_SOVITS_DATA_ROOT": "/data",
+            "GPT_SOVITS_CUSTOM_T2S_PATH": "/data/custom_weights/elysia.ckpt",
+            "GPT_SOVITS_CUSTOM_VITS_PATH": "/data/custom_weights/elysia.pth",
+        }
+        result = _render(env, output)
+        custom = result["custom"]
+        assert custom["t2s_weights_path"] == "/data/custom_weights/elysia.ckpt"
+        assert custom["vits_weights_path"] == "/data/custom_weights/elysia.pth"
+
+
 def test_output_file_is_valid_yaml_with_all_versions():
     """Generated YAML includes all known version sections."""
     with tempfile.TemporaryDirectory() as tmp:

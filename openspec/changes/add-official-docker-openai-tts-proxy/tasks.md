@@ -16,10 +16,10 @@
 
 ## 3. Local Runtime Setup
 
-- [ ] 3.1 Create `~/docker/gpt-sovits-official/docker-compose.yaml` for local operation.
-- [ ] 3.2 Create `~/docker/gpt-sovits-official/.env` with local paths and current Elysia model settings.
-- [ ] 3.3 Create expected persistence directories under `/stockroom/docker_container_data/gpt-sovits-official`.
-- [ ] 3.4 Provide commands or notes to migrate pretrained models, G2PW, custom Elysia weights, and reference audio from the old persistence root.
+- [x] 3.1 Create `~/docker/gpt-sovits-official/docker-compose.yaml` for local operation.
+- [x] 3.2 Create `~/docker/gpt-sovits-official/.env` with local paths and current Elysia model settings.
+- [x] 3.3 Create expected persistence directories under `/stockroom/docker_container_data/gpt-sovits-official`.
+- [x] 3.4 Provide commands or notes to migrate pretrained models, G2PW, custom Elysia weights, and reference audio from the old persistence root.
 
 ## 4. Verification
 
