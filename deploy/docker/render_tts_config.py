@@ -59,18 +59,15 @@ def main():
 
     vc = VERSION_CONFIG.get(version, VERSION_CONFIG["v2"])
 
-    def _path(relative):
-        return os.path.join(data_root, relative)
-
     custom_t2s = os.environ.get("GPT_SOVITS_CUSTOM_T2S_PATH")
     custom_vits = os.environ.get("GPT_SOVITS_CUSTOM_VITS_PATH")
 
-    t2s_path = custom_t2s or _path(vc["t2s_weights_path"])
-    vits_path = custom_vits or _path(vc["vits_weights_path"])
+    t2s_path = custom_t2s or vc["t2s_weights_path"]
+    vits_path = custom_vits or vc["vits_weights_path"]
 
     config = {"custom": {
-        "bert_base_path": _path(BERT_BASE),
-        "cnhuhbert_base_path": _path(CNHUBERT_BASE),
+        "bert_base_path": BERT_BASE,
+        "cnhuhbert_base_path": CNHUBERT_BASE,
         "device": device,
         "is_half": is_half,
         "t2s_weights_path": t2s_path,
@@ -80,13 +77,13 @@ def main():
 
     for ver, vc_entry in VERSION_CONFIG.items():
         config[ver] = {
-            "bert_base_path": _path(BERT_BASE),
-            "cnhuhbert_base_path": _path(CNHUBERT_BASE),
+            "bert_base_path": BERT_BASE,
+            "cnhuhbert_base_path": CNHUBERT_BASE,
             "device": "cpu",
             "is_half": False,
-            "t2s_weights_path": _path(vc_entry["t2s_weights_path"]),
+            "t2s_weights_path": vc_entry["t2s_weights_path"],
             "version": ver,
-            "vits_weights_path": _path(vc_entry["vits_weights_path"]),
+            "vits_weights_path": vc_entry["vits_weights_path"],
         }
 
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)

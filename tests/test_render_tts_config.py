@@ -67,8 +67,9 @@ def test_v2pro_version_sets_correct_weights():
         assert custom["t2s_weights_path"].endswith("s1v3.ckpt")
 
 
-def test_data_root_prefixes_model_paths():
-    """All model paths are prefixed with GPT_SOVITS_DATA_ROOT."""
+def test_model_paths_are_project_relative():
+    """Default model paths are project-relative (not prefixed with data root).
+    start.sh handles symlinking persistence dirs into the expected locations."""
     with tempfile.TemporaryDirectory() as tmp:
         output = os.path.join(tmp, "tts_infer.yaml")
         env = {
@@ -77,10 +78,14 @@ def test_data_root_prefixes_model_paths():
         }
         result = _render(env, output)
         custom = result["custom"]
-        for key in ("bert_base_path", "cnhuhbert_base_path",
-                     "t2s_weights_path", "vits_weights_path"):
-            assert custom[key].startswith("/stockroom/gpt-sovits-official"), \
-                f"{key} should be prefixed with data root"
+        assert custom["bert_base_path"].startswith("GPT_SoVITS/")
+        assert custom["cnhuhbert_base_path"].startswith("GPT_SoVITS/")
+        assert custom["t2s_weights_path"].startswith("GPT_SoVITS/")
+        assert custom["vits_weights_path"].startswith("GPT_SoVITS/")
+        assert not any(p.startswith("/") for p in [
+            custom["bert_base_path"], custom["cnhuhbert_base_path"],
+            custom["t2s_weights_path"], custom["vits_weights_path"],
+        ])
 
 
 def test_custom_weight_paths_override_defaults():
