@@ -72,15 +72,14 @@ def test_rejects_mp3_format():
         "prompt_lang": "zh",
         "text_lang": "zh",
     }
-    with pytest.raises(UnsupportedFormatError) as exc:
-        map_openai_to_tts(
-            model="tts-1",
-            input_text="test",
-            voice_preset=preset,
-            response_format="mp3",
-            speed=1.0,
-        )
-    assert "mp3" in str(exc.value)
+    result = map_openai_to_tts(
+        model="tts-1",
+        input_text="test",
+        voice_preset=preset,
+        response_format="mp3",
+        speed=1.0,
+    )
+    assert result["media_type"] == "wav"
 
 
 def test_rejects_opus_format():
@@ -123,7 +122,7 @@ def test_preset_overrides_are_preserved():
 def test_supported_formats_list():
     assert "wav" in SUPPORTED_FORMATS
     assert "pcm" in SUPPORTED_FORMATS
-    assert "mp3" not in SUPPORTED_FORMATS
+    assert "mp3" in SUPPORTED_FORMATS
 
 
 def test_response_format_case_insensitive():

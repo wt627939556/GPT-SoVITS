@@ -1,8 +1,8 @@
 """Map OpenAI TTS fields to GPT-SoVITS /tts fields."""
 
-SUPPORTED_FORMATS = {"wav", "pcm"}
+SUPPORTED_FORMATS = {"wav", "pcm", "mp3"}
 
-_FORMAT_MAP = {"wav": "wav", "pcm": "raw"}
+_FORMAT_MAP = {"wav": "wav", "pcm": "raw", "mp3": "wav"}
 
 
 class UnsupportedFormatError(Exception):

@@ -66,12 +66,12 @@ def test_audio_speech_alias_works(client):
 
 
 def test_rejects_unsupported_format(client):
-    req = {**VALID_REQUEST, "response_format": "mp3"}
+    req = {**VALID_REQUEST, "response_format": "opus"}
     resp = client.post("/v1/audio/speech", json=req)
     assert resp.status_code == 400
     body = resp.json()
     assert "error" in body
-    assert "mp3" in str(body["error"]["message"])
+    assert "opus" in str(body["error"]["message"])
 
 
 def test_rejects_unknown_voice(client):
