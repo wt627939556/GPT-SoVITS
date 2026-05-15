@@ -1,0 +1,69 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.eggs
+
+# Virtual environments
+.venv
+venv
+env
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+logs/
+temp/
+tmp/
+
+# Docker
+.docker
+Dockerfile
+docker-compose*.yaml
+docker-compose*.yml
+docker_build.sh
+Docker/
+
+# Documentation
+docs/
+*.md
+!requirements.txt
+
+# Environment
+.env
+.env.*
+*.local
+
+# Testing
+tests/
+*_test.py
+test_*.py
+
+# OpenSpec
+openspec/
+
+# Model weights and data (mounted at runtime)
+GPT_SoVITS/pretrained_models/
+GPT_SoVITS/text/G2PWModel/
+tools/asr/models/
+tools/uvr5/uvr5_weights/
+GPT_weights*/
+SoVITS_weights*/
+reference_audio/
+cache/
+output/

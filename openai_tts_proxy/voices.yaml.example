@@ -1,0 +1,9 @@
+elysia:
+  ref_audio_path: /data/reference_audio/elysia.wav
+  prompt_text: "我是「罗浮」云骑将军景元。不必拘谨，「将军」只是一时的身份，你称呼我景元便可"
+  prompt_lang: zh
+  text_lang: zh
+  text_split_method: cut5
+  speed_factor: 1.0
+  batch_size: 1
+  streaming_mode: false

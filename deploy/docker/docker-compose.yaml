@@ -1,0 +1,123 @@
+services:
+  gpt-sovits-api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        CUDA_VERSION: "${CUDA_VERSION:-}"
+    image: gpt-sovits-official:${GPT_SOVITS_TAG:-latest-cpu}
+    container_name: gpt-sovits-api
+    ports:
+      - "${API_PORT:-9880}:9880"
+    environment:
+      - GPT_SOVITS_DEVICE=${GPT_SOVITS_DEVICE:-cpu}
+      - GPT_SOVITS_IS_HALF=${GPT_SOVITS_IS_HALF:-false}
+      - GPT_SOVITS_VERSION=${GPT_SOVITS_VERSION:-v2}
+      - GPT_SOVITS_DATA_ROOT=/data
+      - GPT_SOVITS_CONFIG_OUTPUT=GPT_SoVITS/configs/tts_infer.yaml
+    volumes:
+      - ${DATA_ROOT:-./data}/pretrained_models:/data/pretrained_models:ro
+      - ${DATA_ROOT:-./data}/G2PWModel:/data/G2PWModel:ro
+      - ${DATA_ROOT:-./data}/asr_models:/data/asr_models:ro
+      - ${DATA_ROOT:-./data}/uvr5_weights:/data/uvr5_weights:ro
+      - ${DATA_ROOT:-./data}/custom_weights:/data/custom_weights:ro
+      - ${DATA_ROOT:-./data}/reference_audio:/data/reference_audio:ro
+      - ${DATA_ROOT:-./data}/cache:/data/cache
+      - ${DATA_ROOT:-./data}/output:/data/output
+      - ${DATA_ROOT:-./data}/temp:/data/temp
+    healthcheck:
+      test: ["CMD", "curl", "--max-time", "5", "--fail", "--silent", "--output", "/dev/null", "http://localhost:9880/openapi.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    shm_size: "4gb"
+    networks:
+      - gpt-sovits
+
+  gpt-sovits-api-gpu:
+    profiles:
+      - gpu
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        CUDA_VERSION: "${CUDA_VERSION:-12.6}"
+    image: gpt-sovits-official:${GPT_SOVITS_TAG:-latest-cu126}
+    container_name: gpt-sovits-api-gpu
+    ports:
+      - "${API_PORT:-9880}:9880"
+    environment:
+      - GPT_SOVITS_DEVICE=cuda
+      - GPT_SOVITS_IS_HALF=${GPT_SOVITS_IS_HALF:-true}
+      - GPT_SOVITS_VERSION=${GPT_SOVITS_VERSION:-v2}
+      - GPT_SOVITS_DATA_ROOT=/data
+      - GPT_SOVITS_CONFIG_OUTPUT=GPT_SoVITS/configs/tts_infer.yaml
+    volumes:
+      - ${DATA_ROOT:-./data}/pretrained_models:/data/pretrained_models:ro
+      - ${DATA_ROOT:-./data}/G2PWModel:/data/G2PWModel:ro
+      - ${DATA_ROOT:-./data}/asr_models:/data/asr_models:ro
+      - ${DATA_ROOT:-./data}/uvr5_weights:/data/uvr5_weights:ro
+      - ${DATA_ROOT:-./data}/custom_weights:/data/custom_weights:ro
+      - ${DATA_ROOT:-./data}/reference_audio:/data/reference_audio:ro
+      - ${DATA_ROOT:-./data}/cache:/data/cache
+      - ${DATA_ROOT:-./data}/output:/data/output
+      - ${DATA_ROOT:-./data}/temp:/data/temp
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    shm_size: "4gb"
+    networks:
+      - gpt-sovits
+
+  openai-tts-proxy:
+    build:
+      context: ../..
+      dockerfile: openai_tts_proxy/Dockerfile
+    image: gpt-sovits-proxy:${PROXY_TAG:-latest}
+    container_name: openai-tts-proxy
+    ports:
+      - "${PROXY_PORT:-8000}:8000"
+    environment:
+      - GPT_SOVITS_API_URL=http://gpt-sovits-api:9880
+      - VOICES_CONFIG=/app/voices.yaml
+    volumes:
+      - ${DATA_ROOT:-./data}/reference_audio:/data/reference_audio:ro
+      - ${VOICES_YAML:-./openai_tts_proxy/voices.yaml}:/app/voices.yaml:ro
+    healthcheck:
+      test: ["CMD", "curl", "--max-time", "5", "--fail", "--silent", "--output", "/dev/null", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    networks:
+      - gpt-sovits
+    depends_on:
+      gpt-sovits-api:
+        condition: service_healthy
+
+networks:
+  gpt-sovits:
+    driver: bridge
