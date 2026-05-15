@@ -124,3 +124,18 @@ def test_supported_formats_list():
     assert "wav" in SUPPORTED_FORMATS
     assert "pcm" in SUPPORTED_FORMATS
     assert "mp3" not in SUPPORTED_FORMATS
+
+
+def test_response_format_case_insensitive():
+    preset = {"ref_audio_path": "/data/ref.wav", "prompt_lang": "zh", "text_lang": "zh"}
+    result = map_openai_to_tts(
+        model="tts-1", input_text="test", voice_preset=preset,
+        response_format="WAV", speed=1.0,
+    )
+    assert result["media_type"] == "wav"
+
+    result2 = map_openai_to_tts(
+        model="tts-1", input_text="test", voice_preset=preset,
+        response_format="Pcm", speed=1.0,
+    )
+    assert result2["media_type"] == "raw"

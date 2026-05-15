@@ -89,6 +89,22 @@ def test_sanitizes_input_before_forwarding(client):
     assert resp.status_code == 200
 
 
+def test_rejects_non_numeric_speed(client):
+    req = {**VALID_REQUEST, "speed": "fast"}
+    resp = client.post("/v1/audio/speech", json=req)
+    assert resp.status_code == 400
+    body = resp.json()
+    assert "error" in body
+    assert "speed" in str(body["error"]["message"]).lower()
+
+
+def test_rejects_input_that_becomes_empty_after_sanitization(client):
+    req = {**VALID_REQUEST, "input": "[/tts:text]]"}
+    resp = client.post("/v1/audio/speech", json=req)
+    assert resp.status_code == 400
+    assert "input" in str(resp.json()["error"]["message"]).lower()
+
+
 def test_health_endpoint(client):
     resp = client.get("/health")
     assert resp.status_code == 200

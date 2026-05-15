@@ -54,13 +54,15 @@ services:
     image: gpt-sovits-official:${GPT_SOVITS_TAG:-latest-cu126}
     container_name: gpt-sovits-api-gpu
     ports:
-      - "${API_PORT:-9880}:9880"
+      - "${GPU_API_PORT:-9882}:9880"
     environment:
       - GPT_SOVITS_DEVICE=cuda
       - GPT_SOVITS_IS_HALF=${GPT_SOVITS_IS_HALF:-true}
       - GPT_SOVITS_VERSION=${GPT_SOVITS_VERSION:-v2}
       - GPT_SOVITS_DATA_ROOT=/data
       - GPT_SOVITS_CONFIG_OUTPUT=GPT_SoVITS/configs/tts_infer.yaml
+      - GPT_SOVITS_CUSTOM_T2S_PATH=${GPT_SOVITS_CUSTOM_T2S_PATH:-}
+      - GPT_SOVITS_CUSTOM_VITS_PATH=${GPT_SOVITS_CUSTOM_VITS_PATH:-}
     volumes:
       - ${DATA_ROOT:-./data}/pretrained_models:/data/pretrained_models:ro
       - ${DATA_ROOT:-./data}/G2PWModel:/data/G2PWModel:ro
@@ -119,6 +121,7 @@ services:
     depends_on:
       gpt-sovits-api:
         condition: service_healthy
+        required: false
 
 networks:
   gpt-sovits:

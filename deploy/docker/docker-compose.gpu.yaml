@@ -1,0 +1,17 @@
+# GPU override — use with: docker compose -f docker-compose.yaml -f docker-compose.gpu.yaml up -d
+#
+# Switches from CPU to GPU API by:
+#   - Disabling the default CPU API service
+#   - Promoting the GPU API service so it starts without --profile gpu
+#   - Using the same container_name so the proxy URL stays correct
+
+services:
+  gpt-sovits-api:
+    profiles:
+      - disabled
+
+  gpt-sovits-api-gpu:
+    profiles: []
+    container_name: gpt-sovits-api
+    ports:
+      - "${API_PORT:-9880}:9880"

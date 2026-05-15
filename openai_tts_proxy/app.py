@@ -32,10 +32,15 @@ def create_app(voices_path: str | None = None) -> FastAPI:
         input_text = body.get("input", "")
         voice_name = body.get("voice", "")
         response_format = body.get("response_format", "wav")
-        speed = float(body.get("speed", 1.0))
 
-        if not input_text:
-            return _openai_error("invalid_request_error", "input is required", 400)
+        try:
+            speed = float(body.get("speed", 1.0))
+        except (ValueError, TypeError):
+            return _openai_error(
+                "invalid_request_error",
+                f"speed must be a number, got '{body.get('speed')}'",
+                400,
+            )
 
         try:
             preset = get_voice(voice_name)
@@ -47,6 +52,9 @@ def create_app(voices_path: str | None = None) -> FastAPI:
             )
 
         cleaned = sanitize_text(input_text)
+
+        if not cleaned:
+            return _openai_error("invalid_request_error", "input is empty", 400)
 
         try:
             tts_params = map_openai_to_tts(

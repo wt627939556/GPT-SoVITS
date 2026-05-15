@@ -17,7 +17,8 @@ def map_openai_to_tts(
     response_format: str,
     speed: float,
 ) -> dict:
-    if response_format not in SUPPORTED_FORMATS:
+    fmt = response_format.lower()
+    if fmt not in SUPPORTED_FORMATS:
         raise UnsupportedFormatError(
             f"response_format '{response_format}' is not supported; "
             f"supported formats: {', '.join(sorted(SUPPORTED_FORMATS))}"
@@ -25,7 +26,7 @@ def map_openai_to_tts(
 
     tts_request = {
         "text": input_text,
-        "media_type": _FORMAT_MAP[response_format],
+        "media_type": _FORMAT_MAP[fmt],
         "speed_factor": speed,
         **voice_preset,
     }
