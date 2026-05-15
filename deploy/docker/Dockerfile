@@ -32,7 +32,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
       pip install --no-cache-dir torch torchaudio --index-url https://download.pytorch.org/whl/cu${CUDA_VERSION/./}; \
     fi && \
     pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -r extra-req.txt
+    pip install --no-cache-dir -r extra-req.txt && \
+    pip install --no-cache-dir torchcodec
 
 COPY . /app
 

@@ -61,7 +61,7 @@ def create_app(voices_path: str | None = None) -> FastAPI:
 
         api_url = os.environ.get(GPT_SOVITS_API_URL, "http://localhost:9880")
         async with httpx.AsyncClient(timeout=120) as client:
-            upstream = await client.post(f"{api_url}/tts", params=tts_params)
+            upstream = await client.post(f"{api_url}/tts", json=tts_params)
 
         if upstream.status_code != 200:
             return _openai_error(
