@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+RUN useradd --create-home --uid 1000 appuser
+
 WORKDIR /app
 
 COPY requirements.txt extra-req.txt ./
@@ -43,7 +45,7 @@ RUN mkdir -p /data/pretrained_models \
     /data/cache \
     /data/output \
     /data/temp && \
-    chown -R 1000:1000 /app /data
+    chown -R appuser:appuser /app /data
 
 COPY deploy/docker/start.sh deploy/docker/render_tts_config.py /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
@@ -59,6 +61,6 @@ EXPOSE 9880
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=180s \
     CMD curl --max-time 5 --fail --silent --output /dev/null http://localhost:9880/openapi.json
 
-USER 1000:1000
+USER appuser:appuser
 
 CMD ["/usr/local/bin/start.sh"]
