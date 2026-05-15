@@ -23,9 +23,9 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Run proxy unit tests for request mapping and input sanitization.
-- [ ] 4.2 Validate compose config for CPU default services.
-- [ ] 4.3 Build the CPU GPT-SoVITS image and proxy image.
-- [ ] 4.4 Start CPU API plus proxy and verify health endpoints.
-- [ ] 4.5 Generate a WAV through `/v1/audio/speech` using the known Elysia test sentence and record the output path.
-- [ ] 4.6 Confirm official source files remain unmodified.
+- [x] 4.1 Run proxy unit tests for request mapping and input sanitization.
+- [x] 4.2 Validate compose config for CPU default services.
+- [x] 4.3 Build the CPU GPT-SoVITS image and proxy image.
+- [x] 4.4 Start CPU API plus proxy and verify health endpoints.
+- [x] 4.5 Generate a WAV through `/v1/audio/speech` using the known Elysia test sentence and record the output path.
+- [x] 4.6 Confirm official source files remain unmodified.
