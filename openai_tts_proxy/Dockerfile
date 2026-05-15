@@ -5,6 +5,7 @@ LABEL org.opencontainers.image.description="OpenAI-compatible TTS proxy for GPT-
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home --uid 1000 appuser

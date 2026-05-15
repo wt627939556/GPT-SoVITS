@@ -65,6 +65,16 @@ def test_audio_speech_alias_works(client):
     assert resp.status_code == 200
 
 
+def test_mp3_format_returns_mpeg(client):
+    req = {**VALID_REQUEST, "response_format": "mp3"}
+    with patch("openai_tts_proxy.app._convert_wav_to_mp3", return_value=b"fake-mp3-data"):
+        resp = client.post("/v1/audio/speech", json=req)
+
+    assert resp.status_code == 200
+    assert resp.content == b"fake-mp3-data"
+    assert resp.headers["content-type"].startswith("audio/mpeg")
+
+
 def test_rejects_unsupported_format(client):
     req = {**VALID_REQUEST, "response_format": "opus"}
     resp = client.post("/v1/audio/speech", json=req)

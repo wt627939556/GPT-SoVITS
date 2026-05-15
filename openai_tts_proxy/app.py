@@ -1,6 +1,7 @@
 """OpenAI-compatible TTS proxy that forwards to GPT-SoVITS /tts."""
 
 import os
+import subprocess
 
 import httpx
 from fastapi import FastAPI, Request
@@ -78,6 +79,14 @@ def create_app(voices_path: str | None = None) -> FastAPI:
                 502,
             )
 
+        requested_format = str(response_format).lower()
+        if requested_format == "mp3":
+            try:
+                audio = _convert_wav_to_mp3(upstream.content)
+            except RuntimeError as e:
+                return _openai_error("api_error", str(e), 502)
+            return Response(content=audio, media_type="audio/mpeg")
+
         content_type = upstream.headers.get("content-type", "audio/wav")
         return Response(content=upstream.content, media_type=content_type)
 
@@ -100,3 +109,32 @@ def _openai_error(error_type: str, message: str, status_code: int) -> JSONRespon
             }
         },
     )
+
+
+def _convert_wav_to_mp3(wav_bytes: bytes) -> bytes:
+    process = subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-i",
+            "pipe:0",
+            "-vn",
+            "-codec:a",
+            "libmp3lame",
+            "-b:a",
+            "192k",
+            "-f",
+            "mp3",
+            "pipe:1",
+        ],
+        input=wav_bytes,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if process.returncode != 0:
+        message = process.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(f"mp3 conversion failed: {message or 'ffmpeg exited with error'}")
+    return process.stdout
