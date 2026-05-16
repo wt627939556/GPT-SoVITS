@@ -16,10 +16,10 @@
 
 ## 3. Local Runtime Setup
 
-- [x] 3.1 Create `~/docker/gpt-sovits-official/docker-compose.yaml` for local operation.
-- [x] 3.2 Create `~/docker/gpt-sovits-official/.env` with local paths and current Elysia model settings.
-- [x] 3.3 Create expected persistence directories under `/stockroom/docker_container_data/gpt-sovits-official`.
-- [x] 3.4 Provide commands or notes to migrate pretrained models, G2PW, custom Elysia weights, and reference audio from the old persistence root.
+- [x] 3.1 Create a local runtime compose directory outside the repository.
+- [x] 3.2 Create a local `.env` with machine-specific paths and custom model settings.
+- [x] 3.3 Create expected persistence directories under a machine-specific Docker data root.
+- [x] 3.4 Provide commands or notes to migrate pretrained models, G2PW, custom weights, and reference audio from an existing persistence root.
 
 ## 4. Verification
 
@@ -27,5 +27,5 @@
 - [x] 4.2 Validate compose config for CPU default services.
 - [x] 4.3 Build the CPU GPT-SoVITS image and proxy image.
 - [x] 4.4 Start CPU API plus proxy and verify health endpoints.
-- [x] 4.5 Generate a WAV through `/v1/audio/speech` using the known Elysia test sentence and record the output path.
+- [x] 4.5 Generate audio through `/v1/audio/speech` using a voice preset and record the output path.
 - [x] 4.6 Confirm official source files remain unmodified.

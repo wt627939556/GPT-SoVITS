@@ -29,5 +29,5 @@ The current working GPT-SoVITS deployment is based on a third-party inference sn
 - Adds repository-local deployment files under `deploy/docker/`.
 - Adds repository-local proxy code under `openai_tts_proxy/`.
 - Adds repository-local compose template that avoids user-specific absolute paths.
-- Adds local runtime compose/env under `~/docker/gpt-sovits-official/` outside the repository.
-- Requires a new persistence root at `/stockroom/docker_container_data/gpt-sovits-official` for this machine.
+- Adds local runtime compose/env outside the repository.
+- Requires a host persistence root for pretrained models, custom weights, reference audio, cache, and output files.

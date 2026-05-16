@@ -74,7 +74,7 @@ def test_model_paths_are_project_relative():
         output = os.path.join(tmp, "tts_infer.yaml")
         env = {
             "GPT_SOVITS_CONFIG_OUTPUT": output,
-            "GPT_SOVITS_DATA_ROOT": "/stockroom/gpt-sovits-official",
+            "GPT_SOVITS_DATA_ROOT": "/srv/gpt-sovits",
         }
         result = _render(env, output)
         custom = result["custom"]

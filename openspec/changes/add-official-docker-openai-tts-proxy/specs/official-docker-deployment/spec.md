@@ -31,7 +31,7 @@ The system SHALL keep models, reference audio, caches, outputs, and temporary da
 
 ### Requirement: Repository template excludes machine paths
 
-The repository Compose template SHALL NOT hard-code user-specific absolute paths such as `/stockroom/docker_container_data`.
+The repository Compose template SHALL NOT hard-code user-specific absolute host paths.
 
 #### Scenario: Inspect repository compose
 

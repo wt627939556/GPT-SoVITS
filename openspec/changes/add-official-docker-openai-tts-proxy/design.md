@@ -12,7 +12,7 @@ Official GPT-SoVITS already exposes `/tts` through `api_v2.py`. It does not expo
 - Provide CPU-default Docker deployment for the official API.
 - Include GPU profile services for future CUDA hardware.
 - Provide OpenAI-compatible `/audio/speech` and `/v1/audio/speech` through a separate proxy.
-- Support the current Elysia scenario with a `voices.yaml` preset.
+- Support a single loaded model with one or more `voices.yaml` presets.
 - Keep local absolute paths and secrets out of the repository.
 
 **Non-Goals:**
@@ -34,15 +34,15 @@ The first version assumes one loaded GPT/SoVITS weight pair. `voices.yaml` maps 
 
 3. Use `voices.yaml` for voice presets.
 
-The first file will contain `elysia`, but the schema supports more presets that share the currently loaded model. This keeps future fine-tuned reference presets out of code.
+The example file contains `elysia`, but the schema supports more presets that share the currently loaded model. This keeps future fine-tuned reference presets out of code.
 
-4. Proxy forwards `wav` and `pcm` only in the first version.
+4. Proxy supports `wav`, `pcm`, and OpenAI-style `mp3`.
 
-Official `/tts` supports `wav`, `raw`, `ogg`, and `aac`, but not `mp3`. To keep the first version small, `mp3` should return a clear OpenAI-shaped 400 error. MP3 transcoding can be added later if a caller actually needs it.
+Official `/tts` supports `wav`, `raw`, `ogg`, and `aac`, but not `mp3`. The proxy requests `wav` from the official API when callers ask for `mp3`, then transcodes the response with `ffmpeg` and returns `audio/mpeg`.
 
 5. Repository compose is generic; local compose/env is machine-specific.
 
-The repository compose template should use relative paths and variables. The local runtime copy under `~/docker/gpt-sovits-official` can set `/stockroom/docker_container_data/gpt-sovits-official`.
+The repository compose template should use relative paths and variables. Machine-specific compose copies can set their own persistence roots, custom model paths, host ports, and external networks.
 
 ## Risks / Trade-offs
 
@@ -54,15 +54,15 @@ The repository compose template should use relative paths and variables. The loc
 ## Migration Plan
 
 1. Add Docker/proxy files in the official fork without changing upstream source files.
-2. Create local runtime directory `~/docker/gpt-sovits-official`.
-3. Use persistence root `/stockroom/docker_container_data/gpt-sovits-official`.
-4. Copy or manually migrate required pretrained models, G2PW files, Elysia weights, and reference audio from the old persistence root.
+2. Create a local runtime directory outside the repository.
+3. Choose a machine-specific persistence root for Docker data.
+4. Copy or manually migrate required pretrained models, G2PW files, custom weights, and reference audio from the old persistence root.
 5. Build and start CPU GPT-SoVITS API plus proxy.
-6. Test official `/tts`, then test proxy `/v1/audio/speech` with the known Elysia sentence.
+6. Test official `/tts`, then test proxy `/v1/audio/speech` with a configured voice preset.
 7. Keep the old service available until the new service is verified.
 
 ## Open Questions
 
 - Whether to copy existing persistence data or use temporary symlinks during migration.
-- Whether OpenClaw/Hermes needs `mp3` response format later.
+- Whether additional OpenAI audio formats should be supported beyond `wav`, `pcm`, and `mp3`.
 - Whether the first GPU target will be Tesla P4 or NVIDIA A2, which affects the best CUDA image and `is_half` default.
