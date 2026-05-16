@@ -123,6 +123,74 @@ services:
         condition: service_healthy
         required: false
 
+  gpt-sovits-webui:
+    profiles:
+      - webui
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.webui
+      args:
+        BASE_IMAGE: gpt-sovits-official:${GPT_SOVITS_TAG:-latest-cpu}
+    image: gpt-sovits-official-webui:${GPT_SOVITS_TAG:-latest-cpu}
+    container_name: gpt-sovits-webui
+    ports:
+      - "${WEBUI_PORT:-9872}:${WEBUI_PORT:-9872}"
+    environment:
+      - GPT_SOVITS_DEVICE=${GPT_SOVITS_DEVICE:-cpu}
+      - GPT_SOVITS_IS_HALF=${GPT_SOVITS_IS_HALF:-false}
+      - GPT_SOVITS_VERSION=${GPT_SOVITS_VERSION:-v2}
+      - GPT_SOVITS_DATA_ROOT=/data
+      - GPT_SOVITS_CONFIG_OUTPUT=GPT_SoVITS/configs/tts_infer.yaml
+      - GPT_SOVITS_CUSTOM_T2S_PATH=${GPT_SOVITS_CUSTOM_T2S_PATH:-}
+      - GPT_SOVITS_CUSTOM_VITS_PATH=${GPT_SOVITS_CUSTOM_VITS_PATH:-}
+      - infer_ttswebui=${WEBUI_PORT:-9872}
+      - is_half=${WEBUI_IS_HALF:-False}
+      - is_share=${WEBUI_IS_SHARE:-False}
+      - language=${WEBUI_LANGUAGE:-zh_CN}
+    volumes:
+      - ${DATA_ROOT:-./data}/pretrained_models:/data/pretrained_models:ro
+      - ${DATA_ROOT:-./data}/G2PWModel:/data/G2PWModel:ro
+      - ${DATA_ROOT:-./data}/asr_models:/data/asr_models:ro
+      - ${DATA_ROOT:-./data}/uvr5_weights:/data/uvr5_weights:ro
+      - ${DATA_ROOT:-./data}/custom_weights:/data/custom_weights:ro
+      - ${DATA_ROOT:-./data}/reference_audio:/data/reference_audio:ro
+      - ${DATA_ROOT:-./data}/cache:/data/cache
+      - ${DATA_ROOT:-./data}/output:/data/output
+      - ${DATA_ROOT:-./data}/temp:/data/temp
+    command:
+      - bash
+      - -lc
+      - |
+        link_dir() {
+          src="$$1"
+          dst="$$2"
+          if [ -d "$$src" ]; then
+            rm -rf "$$dst"
+            ln -sfn "$$src" "$$dst"
+          fi
+        }
+        link_dir /data/pretrained_models GPT_SoVITS/pretrained_models
+        link_dir /data/G2PWModel GPT_SoVITS/text/G2PWModel
+        link_dir /data/asr_models tools/asr/models
+        link_dir /data/uvr5_weights tools/uvr5/uvr5_weights
+        python deploy/docker/render_tts_config.py
+        python GPT_SoVITS/inference_webui_fast.py "$${language:-zh_CN}"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --max-time 5 --fail --silent --output /dev/null http://localhost:$${infer_ttswebui:-9872}/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: unless-stopped
+    shm_size: "4gb"
+    networks:
+      - gpt-sovits
+
 networks:
   gpt-sovits:
     driver: bridge

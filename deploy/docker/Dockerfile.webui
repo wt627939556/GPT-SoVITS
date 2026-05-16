@@ -1,0 +1,9 @@
+ARG BASE_IMAGE=gpt-sovits-official:latest-cpu
+
+FROM ${BASE_IMAGE}
+
+USER root
+
+RUN pip install --no-cache-dir "fastapi[standard]==0.115.2" "starlette==0.40.0"
+
+USER appuser:appuser
